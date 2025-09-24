@@ -13,6 +13,12 @@ It's not representative of my current skills, since if I were to redo it now I w
 - Split functionality into different header files
 - Adhere more to OOP principles
 
+## Gameplay
+
+A game of chess is played between 2 players.
+The game is always printed from white's perspective.
+The program ends when the game ends or after the game's pgn file has been generated if the game is recorded.
+
 ## Features
 
 ### Parsing & IO
@@ -22,12 +28,6 @@ It's not representative of my current skills, since if I were to redo it now I w
   - A trailing + or # is ignored, so it is not necessary to know beforehand that a move was a check.
 - If either player enters "export", the current game position is printed as a [FEN string](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation).
 - A game can be recorded to generate a [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) file after the game has ended.
-
-### Gameplay
-
-- A game of chess is played between 2 players.
-- The game is always printed from white's perspective.
-- The program ends when the game ends or after the game's pgn file has been generated if the game is recorded.
 
 #### Legal moves
 If a move is illegal, the program reprompts the user.
