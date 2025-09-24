@@ -20,15 +20,22 @@ It's not representative of my current skills, since if I were to redo it now I w
 - Loading a position from a [FEN string](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation).
 - Parsing moves from [Algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)).
   - A trailing + or # is ignored, so it is not necessary to know beforehand that a move was a check.
-- If the given move was illegal, the program reprompts the user for another move.
 - If either player enters "export", the current game position is printed as a [FEN string](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation).
-- A game can be recorded to generate a [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) file after tha game has ended.
+- A game can be recorded to generate a [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) file after the game has ended.
 
 ### Gameplay
 
 - A game of chess is played between 2 players.
 - The game is always printed from white's perspective.
-- The program ends when the game ends.
+- The program ends when the game ends or after the game's pgn file has been generated if the game is recorded.
+
+#### Legal moves
+If a move is illegal, the program reprompts the user.
+That being said, the program supports the following weird chess moves:
+- Moving a pawn forward 2 squares from its starting position
+- [Promoting a pawn](https://en.wikipedia.org/wiki/Promotion_(chess))
+- [En passant](https://en.wikipedia.org/wiki/En_passant)
+- [Castling](https://en.wikipedia.org/wiki/Castling)
 
 #### Ending the game
 
@@ -36,9 +43,9 @@ The game ends if any of the following occur:
   -  A player checkmates the other player.
   -  A player resigns by entering "resign".
   -  The game is drawn by entering "draw".
-  -  The game is drawn by stalemate.
-  -  The game is drawn by the [50 Move Rule](https://en.wikipedia.org/wiki/Fifty-move_rule).
-  -  The game is drawn by repetition. NOTE: [Castling rights](https://en.wikipedia.org/wiki/Castling) are not taken into account.
+  -  The game is drawn by [stalemate](https://en.wikipedia.org/wiki/Stalemate).
+  -  The game is drawn by the [50 move rule](https://en.wikipedia.org/wiki/Fifty-move_rule).
+  -  The game is drawn by [threefold repetition](https://en.wikipedia.org/wiki/Threefold_repetition). NOTE: [Castling rights](https://en.wikipedia.org/wiki/Castling#Castling_rights) are not taken into account for this purpose.
   -  The game is drawn because there is insufficient material on the board for either player to checkmate the other player.
 
 ## Requirements/Compiling
