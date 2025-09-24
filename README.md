@@ -7,7 +7,7 @@ I originally wrote it inside a single c file, with the goals of:
 - implementing the rules of chess correctly
 
 This project was meant to be a fun challenge for myself at the time.
-I had basic knowledge of c, little knowledge of OOP, a good understanding of chess rules, and no idea how to parse chess moves from [Algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)).
+I had basic knowledge of c, little knowledge of OOP, a good understanding of chess rules, and no idea where to start.
 It's not representative of my current skills, since if I were to redo it now I would:
 - Focus less on space efficiency and more on code readability/documentation
 - Split functionality into different header files
