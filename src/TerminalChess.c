@@ -223,38 +223,122 @@ typedef struct {
     GameStatus status;                          ///< The game's status
     Move move;                                  ///< The last move made
     BoardPosition positions[100];               ///< The up to 100 last positions since a capture was made
-    unsigned short int movesWithoutCaptures;    ///< How many moves have bene made without a capture
+    unsigned short int movesWithoutCaptures;    ///< How many moves have been made without a capture
     unsigned short int moveCounter;             ///< How many moves have been made
 } GameState;
 
+/// @brief Creates and returns a Board with the pieces in their starting positions
+/// @param void
+/// @return The newly created Board
+/// #BOARD_RELATED
+/// Only called by main and loadPosition
 Board initializeBoard(void);
+
+/// @brief 
+/// @param board 
+/// #BOARD_RELATED
+/// Only called by main
 void printBoard(Board board);
+
+/// @brief parses a FEN string and sets up a GameState that accurately reflects
+///        the string.
+/// @param fenStr the FEN string
+/// @param state the game state to modify
+/// @return whether the parsing was successful
+/// #IO_RELATED
+/// #GAME_STATUS_RELATED
+/// Only called by loadPosition
 bool parseFEN(const char *fenStr, GameState *state);
+
+/// @brief Prompts user for a FEN string and loads the string that user gives.
+///        If the FEN string was invalid, then the user gets reprompted.
+/// @param state the game state to load the position into
+/// #IO_RELATED
+/// #GAME_STATUS_RELATED
+/// Only called by main
 void loadPosition(GameState *state);
+
+/// @brief Prints the FEN string representation of the GameState to stdout.
+/// @param state the GameState to print
+/// #IO_RELATED
+/// #GAME_STATUS_RELATED
+/// Only called by getMove
 void exportPosition(const GameState *state);
+
+
 void getMove(char *buffer, GameState *state, bool *specifyRow, bool *specifyCol);
+
+
 bool getLineOfSight(const Position pos1, const Position pos2, Position *list, unsigned short int *count);
+
+
 bool hasClearSight(Board board, const Position pos1, const Position pos2);
+
+
 bool search(PieceType pieceType, SearchType searchType, Position pos, Position dest, char piece, Board board, Position *candidates, unsigned short int *count, const KingPosition *kingPos);
+
+
 bool searchBoard(PieceType type, SearchType SearchType, Position pos, char piece, Board board, Position *candidates, unsigned short int *count, const KingPosition *kingPos);
+
+
 bool canMoveTo(Board board, Position target, bool isWhite, KingPosition kingPos, const Move previousMove);
+
+
 bool isCheckmate(Board board, KingPosition oppKingPos, Position *checkers, const short int checkerCount, const Move previousMove);
+
+
 BoardPosition *convertBoardPosition(GameState *state);
+
+
 void updateGameStatus(GameState *state, bool *isCheck);
+
+
 bool hasSufficientMaterial(Board board);
+
+
 bool isStalemate(Board board, KingPosition kingPos);
+
+
 bool compareBoardPositions(const BoardPosition *old, const BoardPosition *new);
+
+
 bool isInCheck(Board board, const Position pos, bool isWhite, const Move previousMove, Position *attackers, unsigned short int *attackerCount);
+
+
 bool isPossibleMove(Board board, const Move move, const KingPosition *ownKingPos);
+
+
 void makeMove(Board board, const Move move);
+
+
 bool setMoveToCastle(Move *move, const MoveType type, const KingPosition kingPos);
+
+
 bool validateMove(char *move, GameState *state, bool *specifyRow, bool *specifyCol);
+
+
 bool findDestination(char *rawMove, Move *move, unsigned short int *destinationIndex);
+
+
 bool initializeGameLog(GameLog *game);
+
+
 bool resize(GameLog *game);
+
+/// @brief Checks whether a number is a valid representation of a row on the board.
+/// @param c the number to check
+/// @return if the number could represent a row
 bool isRow(const int c) { return (0 <= c && c < BOARD_SIZE) || ('1' <= c && c < BOARD_SIZE + '1'); }
+
+/// @brief Checks whether a number is a valid representation of a column on the board.
+/// @param c the number to check
+/// @return if the number could represent a column
 bool isCol(const int c) { return (0 <= c && c < BOARD_SIZE) || ('a' <= c && c < BOARD_SIZE + 'a'); }
+
+
 bool logMove(GameLog *game, GameState *state, const bool isCheck, const bool specifyRow, const bool specifyCol);
+
+
 void createGameFile(GameLog *game, GameStatus status);
 
 /// @brief The program asks for a few things to set up the game, and then a game is played.
