@@ -65,4 +65,4 @@ Documenting and refactoring the original source code.
 # Future plans
 
 Once I have properly documented and refactored this nightmare, I plan to fix the bugs I find along the way.
-Additionally, I plan to add some more features like a single-player mode against a chess engine or even more simple things like being able to play multiple games.
+Additionally, I plan to add some more features like a single-player mode against a chess engine (which could potentially become it's own separate project).
