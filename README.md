@@ -1,4 +1,4 @@
-# Terminal Chess
+# TerminalChess
 
 This is a project I developed over the course of 2 weeks in late January/early February of 2024.
 I originally wrote it inside a single c file, with the goals of: 
@@ -45,7 +45,7 @@ The game ends if any of the following occur:
   -  The game is drawn by entering "draw".
   -  The game is drawn by [stalemate](https://en.wikipedia.org/wiki/Stalemate).
   -  The game is drawn by the [50 move rule](https://en.wikipedia.org/wiki/Fifty-move_rule).
-  -  The game is drawn by [threefold repetition](https://en.wikipedia.org/wiki/Threefold_repetition). NOTE: [Castling rights](https://en.wikipedia.org/wiki/Castling#Castling_rights) are not taken into account for this purpose.
+  -  The game is drawn by [threefold repetition](https://en.wikipedia.org/wiki/Threefold_repetition).
   -  The game is drawn because there is insufficient material on the board for either player to checkmate the other player.
 
 ## Requirements/Compiling
@@ -54,6 +54,15 @@ There is a single c file.
 It should compile with any compiler that supports at least c99.
 The terminal in which you run the program should support unicode characters.
 
+## Known bugs
+
+- [Castling rights](https://en.wikipedia.org/wiki/Castling#Castling_rights) are not being taken into account when determining whether the same position has been reached 3 times when determing if the game should be drawn by [threefold repetition](https://en.wikipedia.org/wiki/Threefold_repetition). If two positions look the same on the board but the castling rights are different, then the positions should be considered different.
+
+# Currently working on ...
+
+Documenting and refactoring the original source code.
+
 # Future plans
 
-I plan to refactor this project in the near future, and maybe add some more features like a single-player mode against a chess engine.
+Once I have properly documented and refactored this nightmare, I plan to fix the bugs I find along the way.
+Additionally, I plan to add some more features like a single-player mode against a chess engine or even more simple things like being able to play multiple games.
