@@ -13,14 +13,24 @@
 #include <string.h>
 #include <time.h>
 
-/// The maximum amount of characters a move can be.
+/// The maximum amount of characters a move can be. #MOVE_RELATED
 #define MAX_MOVE_SIZE 10
 
+/// The size of a chess board is 8 x 8. #BOARD_RELATED
 #define BOARD_SIZE 8
-#define BUFFER_SIZE 100
-#define White "White"
-#define Black "Black"
 
+/// How many haracters can fit in a buffer. #IO_RELATED
+#define BUFFER_SIZE 100
+
+/// The string representing the white player. #IO_RELATED
+#define WHITE_STR "White"
+
+/// The string represenitng the black player. #IO_RELATED
+#define BLACK_STR "Black"
+
+/// This macro passes the given arguments to printf
+/// and gets user input from stdin into a char array called buffer.
+/// #IO_RELATED
 #define GET_INPUT(...)                                  \
     printf(__VA_ARGS__);                                \
     fgets(buffer, BUFFER_SIZE, stdin);                  \
@@ -34,31 +44,65 @@
     while (isspace(buffer[c]) && c < BUFFER_SIZE) ++c;  \
     if (c >= BUFFER_SIZE) continue;
 
+/// This macro asserts that a certain condition is true.
+/// If the condition is false then the given error message is printed
+/// to stderr, the variable exitValue is set to -1,
+/// and the program goes to the exit label.
+/// #DESING_PATTERN
 #define ASSERT(condition, errorMessage)                 \
     if (!(condition)) {                                 \
-        printf("\n[ERROR] %s\n", errorMessage);         \
+        fprintf(stderr, "\n[ERROR] %s\n", errorMessage);\
         exitValue = -1;                                 \
         goto exit;                                      \
     }
 
+/// This macro compares two Positions (possibly KingPositions),
+/// and returns whether they are a knight's move apart.
+/// @param pos1 The first position to compare
+/// @param pos2 The second position to compare
+/// #POSITION_RELATED
 #define isKnightMove(pos1, pos2) ((abs((pos1).row - (pos2).row) == 2 * abs((pos1).col - (pos2).col)) || (abs((pos1).col - (pos2).col) == 2 * abs((pos1).row - (pos2).row)))
+
+/// This macro compares two Positions (possibly KingPositions),
+/// and returns whether they refer to the same position.
+/// @param pos1 The first position to compare
+/// @param pos2 The second position to compare
+/// #POSITION_RELATED
 #define comparePositions(pos1, pos2) ((pos1).col == (pos2).col && (pos1).row == (pos2).row)
+
+/// This macro returns whether or not a character representation of a piece
+/// is the same color was would be indicated by the given boolean.
+/// @param piece The piece (char) to compare
+/// @param isWhite If this piece should be compared against WHITE
+/// #PIECE_RELATED
 #define hasSameColor(piece, isWhite) strchr((isWhite) ? "PRNBQK" : "prnbqk", (piece))
+
+/// This macro returns the equivalent Position from a given KingPosition.
+/// @param kingPos the KingPosition to get the equivalent Position from
+/// #POSITION_RELATED
 #define getRegPos(kingPos) (Position){(kingPos).row, (kingPos).col}
+
+/// This macro get the piece (char) from the board at a given position
+/// @param pos the position to get from the board
+/// #POSITION_RELATED
+/// #BOARD_RELATED
+/// #PIECE_RELATED
 #define boardAt(pos) board[(pos).row][(pos).col]
 
+/// @brief A Board is a 2D array of pieces (chars).
 typedef char (*Board)[BOARD_SIZE];
-
 
 /// The size of a chunk.
 #define CHUNK_SIZE 50
 
 /// @brief A chunk is a fixed-length array of string representations of moves made.
 ///        Each string has a fixed maximum size.
+/// #LOGGING_RELATED
 typedef char Chunk[CHUNK_SIZE][MAX_MOVE_SIZE];
 
 /// @brief This enum represents all of the different statuses that a game of chess
 ///        could be in.
+/// #GAME_STATUS_RELATED
 typedef enum {
     WHITE,              ///< It is the WHITE player's turn.
     BLACK,              ///< It is the BLACK player's turn.
@@ -230,7 +274,7 @@ int main(void) {
             puts("It's stalemate!");
             break;
         default:
-            printf("%s wins!\n", state.status == WHITE_WON ? White : Black);
+            printf("%s wins!\n", state.status == WHITE_WON ? WHITE_STR : BLACK_STR);
     }
     if (recording) createGameFile(&gameLog, state.status);
 
@@ -471,7 +515,7 @@ void exportPosition(const GameState *const restrict state) {
         printf(" %c%c ", state->move.destination.col + 'a', '8' - (state->move.destination.row - 1 + (state->move.origin.row == BOARD_SIZE - 2) * 2));
     } else printf(" - ");
     printf("%d %d\n", state->movesWithoutCaptures - 1, state->moveCounter / 2);
-    printf("\n%d. %s to move: ", state->moveCounter / 2, state->status == WHITE ? White : Black);
+    printf("\n%d. %s to move: ", state->moveCounter / 2, state->status == WHITE ? WHITE_STR : BLACK_STR);
 }
 
 void getMove(char *const restrict buffer, GameState *const restrict state, bool *const restrict specifyRow, bool *const restrict specifyCol) {
@@ -479,7 +523,7 @@ void getMove(char *const restrict buffer, GameState *const restrict state, bool 
     const GameStatus status = state->status;
     int c;
     while (true) {
-        GET_INPUT("%d. %s to move: ", moveNumber, status == WHITE ? White : Black)
+        GET_INPUT("%d. %s to move: ", moveNumber, status == WHITE ? WHITE_STR : BLACK_STR)
         if (strcmp(&buffer[c], "export") == 0) {
             exportPosition(state);
             return;
@@ -835,7 +879,7 @@ bool setMoveToCastle(Move *move, const MoveType type, const KingPosition kingPos
     if (type != CASTLESHORT && type != CASTLELONG) return false;
     const bool isWhite = hasSameColor(move->pieceMoved, false);
     if ((!kingPos.canCastleShort && type == CASTLESHORT) || (!kingPos.canCastleLong && type == CASTLELONG)) {
-        printf("%s can't castle %s anymore.\n", isWhite ? White : Black, type == CASTLESHORT ? "short" : "long");
+        printf("%s can't castle %s anymore.\n", isWhite ? WHITE_STR : BLACK_STR, type == CASTLESHORT ? "short" : "long");
         return false;
     }
     *move = (Move){ type, { isWhite ? 7 : 0, 4 }, { isWhite ? 7 : 0, type == CASTLESHORT ? 6 : 2 }, 'k' - isWhite * 32, false, ' ' };
@@ -1078,8 +1122,8 @@ void createGameFile(GameLog * restrict game, GameStatus status) {
     fileWriteFormatted(file, "[Event \"?\"]\n[Site \"?\"]\n[Date \"%d.%02d.%02d\"]\n[EventDate \"?\"]\n[Round \"?\"]\n[Result \"", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday);
     fputs(result, file);
     for (int i = 0; i < 2; ++i) {
-        GET_INPUT("Enter the %s player's name: ", i == 0 ? White : Black)
-        fileWriteFormatted(file, "\"]\n[%s \"%s", i == 0 ? White : Black, buffer);
+        GET_INPUT("Enter the %s player's name: ", i == 0 ? WHITE_STR : BLACK_STR)
+        fileWriteFormatted(file, "\"]\n[%s \"%s", i == 0 ? WHITE_STR : BLACK_STR, buffer);
     }
     fputs("\"]\n\n", file);
     for (int i = 0; i < game->chunkCount * CHUNK_SIZE + game->moveCounter; ++i) {
