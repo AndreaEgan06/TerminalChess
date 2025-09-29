@@ -46,14 +46,14 @@
 
 /// This macro asserts that a certain condition is true.
 /// If the condition is false then the given error message is printed
-/// to stderr, the variable exitValue is set to -1,
+/// to stderr, the variable exitValue is set to EXIT_FAILURE,
 /// and the program goes to the exit label.
 /// #DESING_PATTERN
-#define ASSERT(condition, errorMessage)                 \
-    if (!(condition)) {                                 \
-        fprintf(stderr, "\n[ERROR] %s\n", errorMessage);\
-        exitValue = -1;                                 \
-        goto exit;                                      \
+#define ASSERT(condition, errorMessage)                     \
+    if (!(condition)) {                                     \
+        fprintf(stderr, "\n[ERROR] %s\n", errorMessage);    \
+        exitValue = EXIT_FAILURE;                           \
+        goto exit;                                          \
     }
 
 /// This macro compares two Positions (possibly KingPositions),
@@ -154,55 +154,77 @@ typedef enum {
 } MoveType;
 
 
+/// @brief This struct represents Position on a chess board.
+/// #POSITION_RELATED
 typedef struct {
-    short int row;
-    short int col;
+    short int row;  ///< The Position's row (0-7)
+    short int col;  ///< The Position's column (0-7) which maps to (a-h)
 } Position;
 
+/// @brief This struct represents the Position of a King on a chess board.
+///        A KingPosition includes the King's castling rights.
+/// #POSITION_RELATED
+/// #PIECE_RELATED
 typedef struct {
-    bool canCastleShort : 1;
-    bool canCastleLong  : 1;
-    unsigned short int row : 3;
-    unsigned short int col : 3;
+    bool canCastleShort : 1;    ///< Whether the King can short castle
+    bool canCastleLong  : 1;    ///< Whther the King can long castle
+    unsigned short int row : 3; ///< The King's row (0-7)
+    unsigned short int col : 3; ///< The King's col (0-7) which maps to (a-h)
 } KingPosition;
 
-/// @brief A piece couple contains two sqaures from the board
-///        inside of a single character.
-/// #REMOVE_FROM_EXISTENCE
+/// @brief A PieceCouple bitfield struct contains two squares from the board
+///        inside of a single character for the purposes of capturing
+///        the state of the game and keeping a record of BoardPositions.
+///        This is done to determine when a game should be drawn by 
+///        three fold repetition while trying to be space efficient.
+/// #LOGGING_RELATED
 typedef struct {
     unsigned char p1 : 4;
     unsigned char p2 : 4;
 } PieceCouple;
 
-/// @brief A BoardPosition is an array of PieceCouples?
+/// @brief A BoardPosition is a snaspshot of the state of the board.
+///        it is an array PieceCouples. The reasoning behind PieceCouple
+///        and BoardPosition is that only 32 bytes are needed to represent
+///        the state of the board, though this approach does not consider
+///        things like castling rights which should be taken into consideration
+///        when determining a draw by three fold repetition.
+/// #LOGGING_RELATED
 typedef PieceCouple BoardPosition[BOARD_SIZE * BOARD_SIZE / 2];
 
+/// @brief This struct represents a single chess move made by a player.
+/// #MOVE_RELATED
 typedef struct {
-    MoveType type;
-    Position origin;
-    Position destination;
-    char pieceMoved;
-    bool captures;
-    char promotionPiece;
+    MoveType type;          ///< The type of move that this was
+    Position origin;        ///< The original Position of the piece moved
+    Position destination;   ///< The final Position of the piece moved
+    char pieceMoved;        ///< The piece (char) that was moved
+    bool captures;          ///< Whether this move was a capture
+    char promotionPiece;    ///< What piece was promoted to if the move was a promotion
 } Move;
 
-/// @brief A GameLog contains a text-based log of all the moves made
+/// @brief A GameLog struct contains a text-based log of all the moves made
 ///        during a game.
+/// #LOGGING_RELATED
 typedef struct {
     Chunk *log;         ///< The array of @linkplain Chunks that make up the gamelog.
     int chunkCount;     ///< How many chunks are in the log array.
     int moveCounter;    ///< How many moves have been made.
 } GameLog;
 
+/// @brief This struct represents the current state of the game.
+/// #GAME_STATUS_RELATED
+/// #BOARD_RELATED
+/// #POSITION_RELATED but it shouldn't be
 typedef struct {
-    Board board;
-    KingPosition whiteKing;
-    KingPosition blackKing;
-    GameStatus status;
-    Move move;
-    BoardPosition positions[100];
-    unsigned short int movesWithoutCaptures;
-    unsigned short int moveCounter;
+    Board board;                                ///< The current stats of the board
+    KingPosition whiteKing;                     ///< The WHITE King's position
+    KingPosition blackKing;                     ///< The BLACK King's position
+    GameStatus status;                          ///< The game's status
+    Move move;                                  ///< The last move made
+    BoardPosition positions[100];               ///< The up to 100 last positions since a capture was made
+    unsigned short int movesWithoutCaptures;    ///< How many moves have bene made without a capture
+    unsigned short int moveCounter;             ///< How many moves have been made
 } GameState;
 
 Board initializeBoard(void);
@@ -235,8 +257,13 @@ bool isCol(const int c) { return (0 <= c && c < BOARD_SIZE) || ('a' <= c && c < 
 bool logMove(GameLog *game, GameState *state, const bool isCheck, const bool specifyRow, const bool specifyCol);
 void createGameFile(GameLog *game, GameStatus status);
 
+/// @brief The program asks for a few things to set up the game, and then a game is played.
+///        After the game is over, it might ask for some more things if the game as being recorded.
+///        Then the program finishes. All user input is gotten from stdin.
+/// @param void There are currently no command line arguments
+/// @return EXIT_SUCCESS if there were no errors, otherwise EXIT_FAILURE
 int main(void) {
-    int exitValue = 0, c = 0;
+    int exitValue = EXIT_SUCCESS, c = 0;
     char buffer[BUFFER_SIZE];
     bool recording = false;
     GameLog gameLog = {0};
