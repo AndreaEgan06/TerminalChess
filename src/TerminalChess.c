@@ -89,10 +89,10 @@
 /// #PIECE_RELATED
 #define boardAt(pos) board[(pos).row][(pos).col]
 
-/// @brief A Board is a 2D array of pieces (chars).
+/// @brief A Board is a 2D array of pieces (chars). #BOARD_RELATED
 typedef char (*Board)[BOARD_SIZE];
 
-/// The size of a chunk.
+/// The size of a chunk. #IO_RELATED
 #define CHUNK_SIZE 50
 
 /// @brief A chunk is a fixed-length array of string representations of moves made.
@@ -115,30 +115,44 @@ typedef enum {
     BLACK_WON           ///< The BLACK player won the game.
 } GameStatus;
 
+/// @brief This enum defines the typed of pieces that can be placed on a
+///        chess board. Each value is set equal to the character representation
+///        of the white variant of the piece. (upper case pieces represent
+///        WHITE, whereas lower case pieces represent BLACK)
+/// #PIECE_RELATED
 typedef enum {
-    ROOK = 'R',
-    KNIGHT = 'N',
-    BISHOP = 'B',
-    QUEEN = 'Q',
-    KING = 'K',
-    PAWN = 'P'
+    ROOK = 'R',     ///< A WHITE Rook
+    KNIGHT = 'N',   ///< A WHITE Knight
+    BISHOP = 'B',   ///< A WHITE Bishop
+    QUEEN = 'Q',    ///< A WHITE Queen
+    KING = 'K',     ///< A WHITE King
+    PAWN = 'P'      ///< A WHITE pawn
 } PieceType;
 
+/// @brief This enum defines the types of searches that can be made when
+///        processing a chess move such as finding pieces or verifying
+///        if a move was legal.
+/// #SEARCH_RELATED
 typedef enum {
     FINDPIECES,
     ISLEGALMOVE
 } SearchType;
 
+/// @brief This enum describes the types of moves that
+///        can be made by a player.
+/// #MOVE_RELATED
+/// #GAME_STATUS_RELATED
 typedef enum {
-    NORMALMOVE,
-    DOUBLEPAWNMOVE,
-    ENPEASANT,
-    PROMOTION,
-    CASTLESHORT,
-    CASTLELONG,
-    PLAYERDRAW,
-    RESIGN
+    NORMALMOVE,     ///< The move was a capture or normal piece move
+    DOUBLEPAWNMOVE, ///< The move was a double pawn move
+    ENPEASANT,      ///< The move was en passant
+    PROMOTION,      ///< The move was a promotion
+    CASTLESHORT,    ///< The move was short castle
+    CASTLELONG,     ///< The move was long castle
+    PLAYERDRAW,     ///< The move was a player drawing the game
+    RESIGN          ///< The move was a player resigning the game
 } MoveType;
+
 
 typedef struct {
     short int row;
@@ -152,11 +166,15 @@ typedef struct {
     unsigned short int col : 3;
 } KingPosition;
 
+/// @brief A piece couple contains two sqaures from the board
+///        inside of a single character.
+/// #REMOVE_FROM_EXISTENCE
 typedef struct {
     unsigned char p1 : 4;
     unsigned char p2 : 4;
 } PieceCouple;
 
+/// @brief A BoardPosition is an array of PieceCouples?
 typedef PieceCouple BoardPosition[BOARD_SIZE * BOARD_SIZE / 2];
 
 typedef struct {
